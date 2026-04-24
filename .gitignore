@@ -1,0 +1,18 @@
+# Environments
+venv/
+.venv/
+env/
+
+# API Keys and Secrets
+.env
+.env.local
+
+# Python Cache (These are generated automatically by Python)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# OS generated files
+.DS_Store
+Thumbs.db
