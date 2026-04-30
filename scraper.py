@@ -1,6 +1,6 @@
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
-from urllib.parse import urlkoin, urlparse
+from urllib.parse import urljoin, urlparse
 
 async def scrape_url(url: str):
     async with async_playwright() as p:
@@ -33,6 +33,14 @@ async def crawl_website(base_url: str, max_pages: int = 5):
         page = await browser.new_page()
 
         while urls_to_visit and len(visited_urls) < max_pages:
+            current_url = urls_to_visit.pop(0)
+
+            if current_url in visited_urls:
+                continue
+
+            print(f"Crawling:  {current_url}..")
+            visited_urls.add(current_url)
+
             pass
 
         
