@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from scraper import scrape_url
+from scraper import crawl_website
 from agent import summarize_text
 
 app = FastAPI()
@@ -16,14 +16,15 @@ app.add_middleware(
 
 class URLRequest(BaseModel):
     url : str
+    scroll: bool = False
 
 @app.post("/summarize")
 async def summarize_endpoint(request: URLRequest):
     print(f"Received request for URL: {request.url}")
 
-    scraped_text = await scrape_url(request.url)
+    crawled_text = await crawl_website(request.url, max_pages = 5, scroll=request.scroll)
 
-    summary = await summarize_text(scraped_text)
+    summary = await summarize_text(crawled_text)
 
     return {
         "url": request.url,

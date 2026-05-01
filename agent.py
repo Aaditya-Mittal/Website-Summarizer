@@ -19,12 +19,12 @@ async def summarize_text(text: str) -> str:
         model = MODEL_NAME,
         messages = [
             {
-                "role:": "system",
-                "content": "You are a highly capable assistant that analses and summarizes website contemt. Extract the main points and a concise summary in Markdown"
+                "role": "system",
+                "content": "You are a highly capable assistant that analyzes and summarizes website content. Extract the main points and a concise summary in Markdown. If you have detailed information on the website, you can include those insights as well."
             },
             {
-                "role:": "user",
-                "content": "Summarize the following website content: \n\n(text)"
+                "role": "user",
+                "content": f"Summarize the following website content: \n\n{text}"
             }
         ],
         temperature = 0.3
