@@ -7,7 +7,7 @@ load_dotenv()
 client = AsyncOpenAI(api_key=os.getenv("GEMINI_API_KEY"),
 base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
 
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-2.5-flash"
 
 async def summarize_text(text: str) -> str:
     """
