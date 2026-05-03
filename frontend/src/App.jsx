@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
 import './index.css';
 
 function App() {
@@ -14,6 +15,13 @@ function App() {
       return;
     }
 
+    // Playwright strictly requires http:// or https:// to work
+    let finalUrl = url.trim();
+    if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+      finalUrl = 'https://' + finalUrl;
+      setUrl(finalUrl); // Update the input box to show the user
+    }
+
     setIsLoading(true);
     setError(null);
     setSummary(null);
@@ -22,17 +30,17 @@ function App() {
       const response = await fetch('http://127.0.0.1:8000/summarize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, scroll })
+        body: JSON.stringify({ url: finalUrl, scroll })
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch from the server');
+        throw new Error(`The Python backend crashed or returned an error (Status ${response.status})`);
       }
 
       const data = await response.json();
       setSummary(data.summary);
     } catch (err) {
-      setError('Failed to connect to the backend. The FastAPI server may not be running.');
+      setError(`${err.message}. Check your Python terminal for the exact error!`);
     } finally {
       setIsLoading(false);
     }
@@ -41,7 +49,7 @@ function App() {
   return (
     <div className="app-container">
       <div className="glass-card">
-        <h1>✨ AI Web Crawler</h1>
+        <h1>✨ AI Website Summarizer</h1>
         <p className="subtitle">Extract and summarize knowledge from any website in seconds.</p>
 
         <div className="input-group">
@@ -71,7 +79,7 @@ function App() {
           {isLoading ? (
             <div className="loading-text">
               <span className="loader"></span>
-              Crawling Pages...
+              Analyzing Website...
             </div>
           ) : (
             'Summarize Website'
@@ -97,7 +105,9 @@ function App() {
               </svg>
               Summary Result
             </h3>
-            <div className="result-content">{summary}</div>
+            <div className="result-content markdown-body">
+              <ReactMarkdown>{summary}</ReactMarkdown>
+            </div>
           </div>
         )}
       </div>
