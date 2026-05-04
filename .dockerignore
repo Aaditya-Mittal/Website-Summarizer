@@ -1,0 +1,20 @@
+# Environments
+venv/
+.venv/
+env/
+
+# API Keys and Secrets
+.env
+.env.local
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Git
+.git/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
