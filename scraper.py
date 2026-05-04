@@ -4,7 +4,7 @@ from urllib.parse import urljoin, urlparse
 
 async def scrape_url(url: str):
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
         page = await browser.new_page()
 
         await page.goto(url, wait_until="networkidle")
@@ -29,7 +29,7 @@ async def crawl_website(base_url: str, max_pages: int = 5, scroll: bool = False)
     base_domain = urlparse(base_url).netloc
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
         page = await browser.new_page()
 
         while urls_to_visit and len(visited_urls) < max_pages:
