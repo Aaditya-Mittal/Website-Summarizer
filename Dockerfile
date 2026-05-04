@@ -1,5 +1,5 @@
 # Use the official Playwright Docker image as the base
-FROM mcr.microsoft.com/playwright/python:v1.42.0-jammy
+FROM mcr.microsoft.com/playwright/python:v1.59.0-jammy
 
 WORKDIR /app
 
