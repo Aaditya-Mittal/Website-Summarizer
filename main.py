@@ -3,9 +3,10 @@ import asyncio
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from scraper import crawl_website
-from agent import summarize_text
+from agent import summarize_text_stream
 
 # Force Windows to use the correct async event loop for Playwright
 if sys.platform == "win32":
@@ -31,12 +32,11 @@ async def summarize_endpoint(request: URLRequest):
 
     crawled_text = await crawl_website(request.url, max_pages = 5, scroll=request.scroll)
 
-    summary = await summarize_text(crawled_text)
+    async def stream_generator():
+        async for chunk in summarize_text_stream(crawled_text):
+            yield chunk
 
-    return {
-        "url": request.url,
-        "summary": summary
-    }
+    return StreamingResponse(stream_generator(), media_type="text/plain")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000)

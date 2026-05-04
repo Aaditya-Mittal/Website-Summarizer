@@ -65,7 +65,7 @@ async def crawl_website(base_url: str, max_pages: int = 5, scroll: bool = False)
                         if full_url not in urls_to_visit:
                             urls_to_visit.append(full_url)
 
-            for element in soup(['script','style', 'nav', 'footer', 'header', 'aside']):
+            for element in soup(['script', 'style', 'nav', 'footer', 'aside']):
                 element.decompose()
             
             clean_text = soup.get_text(separator=" ", strip=True)
