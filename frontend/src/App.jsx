@@ -51,16 +51,32 @@ function App() {
     setError(null);
     setSummary(null);
 
+    // AbortController for timeout handling
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute total timeout
+
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
       const response = await fetch(`${apiUrl}/summarize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: finalUrl, scroll })
+        body: JSON.stringify({ url: finalUrl, scroll }),
+        signal: controller.signal
       });
 
+      clearTimeout(timeoutId);
+
       if (!response.ok) {
-        throw new Error(`Server returned an error (Status ${response.status})`);
+        // Try to read the error detail from the JSON response
+        try {
+          const errorData = await response.json();
+          throw new Error(errorData.detail || `Server returned an error (Status ${response.status})`);
+        } catch (jsonErr) {
+          if (jsonErr.message.includes('Server returned') || jsonErr.message.includes('Crawling')) {
+            throw jsonErr;
+          }
+          throw new Error(`Server returned an error (Status ${response.status})`);
+        }
       }
 
       // Stream the response body chunk by chunk
@@ -70,17 +86,35 @@ function App() {
 
       setIsStreaming(true);
 
+      // Set a stream inactivity timeout
+      let streamTimeoutId;
+      const resetStreamTimeout = () => {
+        clearTimeout(streamTimeoutId);
+        streamTimeoutId = setTimeout(() => {
+          console.warn('Stream timed out due to inactivity');
+          reader.cancel();
+        }, 30000); // 30 seconds of no chunks = timeout
+      };
+
+      resetStreamTimeout();
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
+        resetStreamTimeout();
         const chunk = decoder.decode(value, { stream: true });
         accumulated += chunk;
         setSummary(accumulated);
       }
+
+      clearTimeout(streamTimeoutId);
+
     } catch (err) {
-      if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
-        setError('Cannot connect to the backend server. Make sure to run: python main.py');
+      if (err.name === 'AbortError') {
+        setError('Request timed out. The server took too long to respond. Please try again.');
+      } else if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError') || err.message.includes('network')) {
+        setError('Network error: Cannot reach the backend server. It may be starting up — please wait 30 seconds and try again.');
       } else {
         setError(err.message);
       }
@@ -170,7 +204,12 @@ function App() {
         {error && (
           <div className="error-container">
             <span className="error-icon">⚠</span>
-            <span className="error-text">{error}</span>
+            <div className="error-content">
+              <span className="error-text">{error}</span>
+              <button className="retry-btn" onClick={handleSummarize}>
+                ↻ Retry
+              </button>
+            </div>
           </div>
         )}
 

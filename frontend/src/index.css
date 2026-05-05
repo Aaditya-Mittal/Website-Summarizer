@@ -803,3 +803,73 @@ input[type="checkbox"]:checked::after {
     transform: scale(0.8);
   }
 }
+
+/* ===== Error Container ===== */
+.error-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  margin-top: 1rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.error-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.error-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.error-text {
+  color: var(--error);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.retry-btn {
+  align-self: flex-start;
+  padding: 0.4rem 1rem;
+  font-size: 0.85rem;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  color: var(--text-main);
+  background: rgba(248, 113, 113, 0.15);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+  background: rgba(248, 113, 113, 0.25);
+  border-color: rgba(248, 113, 113, 0.5);
+  transform: translateY(-1px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1rem;
+}
+
+.footer p {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  opacity: 0.6;
+}

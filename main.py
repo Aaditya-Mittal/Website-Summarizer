@@ -26,15 +26,40 @@ class URLRequest(BaseModel):
     url : str
     scroll: bool = False
 
+@app.get("/")
+async def health_check():
+    """Health check endpoint for cron jobs and uptime monitors."""
+    return {"status": "ok", "message": "AI Website Summarizer API is running."}
+
 @app.post("/summarize")
 async def summarize_endpoint(request: URLRequest):
     print(f"Received request for URL: {request.url}")
 
-    crawled_text = await crawl_website(request.url, max_pages = 5, scroll=request.scroll)
+    try:
+        crawled_text = await asyncio.wait_for(
+            crawl_website(request.url, max_pages=5, scroll=request.scroll),
+            timeout=60  # 60 second timeout for crawling
+        )
+    except asyncio.TimeoutError:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=504,
+            content={"detail": "Crawling timed out. The website took too long to respond."}
+        )
+    except Exception as e:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=500,
+            content={"detail": f"Error while crawling: {str(e)}"}
+        )
 
     async def stream_generator():
-        async for chunk in summarize_text_stream(crawled_text):
-            yield chunk
+        try:
+            async for chunk in summarize_text_stream(crawled_text):
+                yield chunk
+        except Exception as e:
+            print(f"Streaming error: {e}")
+            yield f"\n\n[Error: The AI response was interrupted. Please try again.]"
 
     return StreamingResponse(stream_generator(), media_type="text/plain")
 
