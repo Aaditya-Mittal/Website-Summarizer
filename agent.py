@@ -53,7 +53,7 @@ async def summarize_text_stream(text: str):
                 - You MUST ONLY use links from that section. Do NOT generate, guess, or assume any URLs.
                 - If a link for something (e.g., LinkedIn, GitHub, Twitter) is NOT in the "Links Found" section, do NOT include any link for it. You may mention the platform name without a URL.
                 - NEVER fabricate or hallucinate any URL. This is a strict rule.
-                - Do not provide all the links. Only provide links you need necessary to provide with the important context you summarized.
+                - Do not provide all the links. Only provide links that are important for the context you summarized. Do not include termms and service, privacy and other such links. You can include contact numbers and links like linkedin, twitter, github and others that provide important context but not only limited to contact links. 
 
                 Make sure to not include any useless information about the website like terms and policies or copyright information unless you feel there is something really important in that part.
                 Extract the main points and a concise summary in Markdown.
