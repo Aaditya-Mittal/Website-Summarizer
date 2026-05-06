@@ -5,6 +5,7 @@ import './index.css';
 function App() {
   const [url, setUrl] = useState('');
   const [scroll, setScroll] = useState(false);
+  const [maxPages, setMaxPages] = useState(5);
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const [summary, setSummary] = useState(null);
@@ -60,7 +61,7 @@ function App() {
       const response = await fetch(`${apiUrl}/summarize`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: finalUrl, scroll }),
+        body: JSON.stringify({ url: finalUrl, scroll, max_pages: maxPages }),
         signal: controller.signal
       });
 
@@ -154,15 +155,37 @@ function App() {
           />
         </div>
 
-        {/* Scroll Engine Toggle */}
-        <label className="checkbox-group">
-          <input
-            type="checkbox"
-            checked={scroll}
-            onChange={(e) => setScroll(e.target.checked)}
-          />
-          Enable Scroll Engine (Catches lazy-loaded content)
-        </label>
+        {/* Controls Row */}
+        <div className="controls-row">
+          {/* Scroll Engine Toggle */}
+          <label className="checkbox-group">
+            <input
+              type="checkbox"
+              checked={scroll}
+              onChange={(e) => setScroll(e.target.checked)}
+            />
+            Enable Scroll Engine
+          </label>
+
+          {/* Max Pages Slider */}
+          <div className="slider-group">
+            <label className="slider-label">
+              Pages to crawl: <span className="slider-value">{maxPages}</span>
+            </label>
+            <input
+              type="range"
+              min="1"
+              max="20"
+              value={maxPages}
+              onChange={(e) => setMaxPages(Number(e.target.value))}
+              className="page-slider"
+            />
+            <div className="slider-range-labels">
+              <span>1</span>
+              <span>20</span>
+            </div>
+          </div>
+        </div>
 
         {/* Submit Button */}
         <button
