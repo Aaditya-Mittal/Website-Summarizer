@@ -25,6 +25,7 @@ app.add_middleware(
 class URLRequest(BaseModel):
     url : str
     scroll: bool = False
+    max_pages: int = 5  # 1 to 20, controlled by frontend
 
 @app.get("/")
 async def health_check():
@@ -35,10 +36,15 @@ async def health_check():
 async def summarize_endpoint(request: URLRequest):
     print(f"Received request for URL: {request.url}")
 
+    # Clamp max_pages to 1-20 range for safety
+    pages = max(1, min(20, request.max_pages))
+    # Scale timeout: ~5 seconds per page, minimum 30s
+    crawl_timeout = max(30, pages * 5)
+
     try:
         crawled_text = await asyncio.wait_for(
-            crawl_website(request.url, max_pages=5, scroll=request.scroll),
-            timeout=60  # 60 second timeout for crawling
+            crawl_website(request.url, max_pages=pages, scroll=request.scroll),
+            timeout=crawl_timeout
         )
     except asyncio.TimeoutError:
         from fastapi.responses import JSONResponse
