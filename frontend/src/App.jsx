@@ -170,7 +170,7 @@ function App() {
           {/* Max Pages Slider */}
           <div className="slider-group">
             <label className="slider-label">
-              Pages to crawl: <span className="slider-value">{maxPages}</span>
+              Maximum Pages to crawl: <span className="slider-value">{maxPages}</span>
             </label>
             <input
               type="range"
