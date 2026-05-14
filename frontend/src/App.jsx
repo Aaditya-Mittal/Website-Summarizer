@@ -187,6 +187,12 @@ function App() {
           </div>
         </div>
 
+        {/* Info Note */}
+        <div className="info-note">
+          <span className="info-icon">ℹ</span>
+          <p>Works on both static and dynamic websites. Currently does not support sites that block scraping via WAF (e.g., Amazon) or require user input/login before displaying content.</p>
+        </div>
+
         {/* Submit Button */}
         <button
           className="summarize-btn"
